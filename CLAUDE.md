@@ -19,14 +19,15 @@ No linter or formatter is configured beyond the compiler (`Nullable` and `Implic
 
 - `global.json` pins the SDK to 8.0.428 (`rollForward: latestFeature`). This machine also has old 2.1.x and 5.0 SDKs; the pin keeps them from being picked up.
 - If `dotnet` or `gh` isn't on PATH in a session, call them by full path: `C:\Program Files\dotnet\dotnet.exe`, `C:\Program Files\GitHub CLI\gh.exe`.
+- Drive C: is full, so builds fail with "not enough space on the disk" when MSBuild writes to the default temp folder. Run dotnet with temp on D: — PowerShell: `$env:TEMP='D:\temp\claude'; $env:TMP='D:\temp\claude'; dotnet test --disable-build-servers`.
 - Restore prints `NU1803` warnings about an HTTP NuGet feed (`lpnugetserver.azurewebsites.net`). It comes from the machine-wide NuGet config, not this repo; ignore it.
 
 ## Structure
 
-- `src/RentCalculator` — class library (`net8.0`), holds the domain logic.
+- `src/RentCalculator` — class library (`net8.0`), holds the domain logic. `ProratedRent.CalculateProratedRent` implements Jira TRIAL-1 (first-month rent from move-in day to month end).
 - `tests/RentCalculator.Tests` — xUnit tests; references the library via `ProjectReference`. `Xunit` is a global using, so test files don't need `using Xunit;`.
 
-The repo is a fresh scaffold: `Class1.cs` and `UnitTest1.cs` are template placeholders with no rent-calculation logic yet. Replace them as real code is added.
+Work is driven by Jira tickets (project `TRIAL` on kiwiblue168.atlassian.net): tests are written first from the ticket's acceptance criteria, labelled with the AC number, and each ticket gets a `feature/<KEY>` branch. Money values are `decimal`; xUnit attributes can't hold `decimal`, so decimal test cases use `TheoryData` + `[MemberData]`.
 
 ## Git
 
